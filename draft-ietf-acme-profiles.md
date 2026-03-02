@@ -112,7 +112,9 @@ To select a profile, the client includes the desired profile name in the `profil
     }
 ~~~
 
-If the server receives a newOrder request specifying a profile that it is not advertising, or specifying a profile which is incompatible with the rest of the contents of the request (e.g. a "tls-server-auth" profile alongside an identifier of type "email"), it MUST reject the request with a problem document of type "invalidProfile" (see Section 6.3).
+The server MUST reject all newOrder requests which specify a profile that is incompatible with the rest of the contents of the request (e.g. a "tls-server-auth" profile alongside an identifier of type "email", or a "super-special" profile requested by an account which is not on the appropriate allowlist). In such cases, the server MUST respond with a problem document of type "invalidProfile" (see Section 6.3).
+
+The server SHOULD reject all newOrder requests which specify a profile that the server is not advertising, but MAY accept them in extenuating circumstances. For example, when a private profile name has been agreed upon with the client via out-of-band mechanisms, or when replacing a certificate during a mass revocation event that was originally issued under a now-deprecated profile.
 
 If it accepts the request, the server responds with an Order object including the selected profile.
 
