@@ -4,8 +4,8 @@
 
 Automated Certificate Management Environment                    A. Gable
 Internet-Draft                          Internet Security Research Group
-Intended status: Standards Track                       11 September 2025
-Expires: 15 March 2026
+Intended status: Standards Track                            2 March 2026
+Expires: 3 September 2026
 
 
  Automated Certificate Management Environment (ACME) Profiles Extension
@@ -72,11 +72,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 March 2026.
+   This Internet-Draft will expire on 3 September 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -219,14 +219,20 @@ Table of Contents
          "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
        }
 
+   The server MUST reject all newOrder requests which specify a profile
+   that is incompatible with the rest of the contents of the request
+   (e.g. a "tls-server-auth" profile alongside an identifier of type
+   "email", or a "super-special" profile requested by an account which
+   is not on the appropriate allowlist).  In such cases, the server MUST
+   respond with a problem document of type "invalidProfile" (see
+   Section 6.3).
+
    The server SHOULD reject all newOrder requests which specify a
-   profile that the server is not advertising, and MUST reject all
-   newOrder requests which specify a profile that is incompatible with
-   the rest of the contents of the request (e.g. a "tls-server-auth"
-   profile alongside an identifier of type "email", or a "super-special"
-   profile requested by an account which is not on the appropriate
-   allowlist).  In such cases, the server MUST respond with a problem
-   document of type "invalidProfile" (see Section 6.3).
+   profile that the server is not advertising, but MAY accept them in
+   extenuating circumstances.  For example, when a private profile name
+   has been agreed upon with the client via out-of-band mechanisms, or
+   when replacing a certificate during a mass revocation event that was
+   originally issued under a now-deprecated profile.
 
    If it accepts the request, the server responds with an Order object
    including the selected profile.
