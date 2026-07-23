@@ -4,8 +4,8 @@
 
 Automated Certificate Management Environment                    A. Gable
 Internet-Draft                          Internet Security Research Group
-Intended status: Standards Track                            2 March 2026
-Expires: 3 September 2026
+Intended status: Standards Track                            23 July 2026
+Expires: 24 January 2027
 
 
  Automated Certificate Management Environment (ACME) Profiles Extension
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 September 2026.
+   This Internet-Draft will expire on 24 January 2027.
 
 Copyright Notice
 
@@ -154,15 +154,14 @@ Table of Contents
    include a new field, profiles, in the meta field of its Directory
    object.
 
-   profiles (optional, object): A map of profile names to human-readable
-   descriptions of those profiles.
+   profiles (optional, object): A map of profile names to URLs.
 
-   The contents of these human-readable descriptions are up to the CA;
-   for example, they might be prose descriptions of the properties of
-   the profile, or the might be URLs pointing at a documentation site.
-   ACME Clients SHOULD present these profile names and descriptions to
-   their operator during initial setup and at appropriate times
-   thereafter.
+   Each profile name is a short unique identifier of the profile, and
+   each URL points to a human-readable description of that profile.  CAs
+   MAY use data URIs to provide an in-line text description if they do
+   not wish to host external documentation pages.  ACME Clients SHOULD
+   present these profile names and URLs to their operator during initial
+   setup and at appropriate times thereafter.
 
        HTTP/1.1 200 OK
        Content-Type: application/json
