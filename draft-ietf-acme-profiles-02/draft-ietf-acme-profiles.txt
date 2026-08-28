@@ -4,8 +4,8 @@
 
 Automated Certificate Management Environment                    A. Gable
 Internet-Draft                          Internet Security Research Group
-Intended status: Standards Track                            23 July 2026
-Expires: 24 January 2027
+Intended status: Standards Track                          28 August 2026
+Expires: 1 March 2027
 
 
  Automated Certificate Management Environment (ACME) Profiles Extension
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 January 2027.
+   This Internet-Draft will expire on 1 March 2027.
 
 Copyright Notice
 
