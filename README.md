@@ -2,16 +2,16 @@
 
 This is the working area for the IETF ACME Working Group Internet-Draft "Automated Certificate Management Environment (ACME) Profiles Extension".
 
-* [Editor's Copy](https://aarongable.github.io/draft-acme-profiles/#go.draft-ietf-acme-profiles.html)
+* [Editor's Copy](https://ietf-wg-acme.github.io/draft-acme-profiles/#go.draft-ietf-acme-profiles.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-acme-profiles)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-ietf-acme-profiles)
-* [Compare Editor's Copy to Individual Draft](https://aarongable.github.io/draft-acme-profiles/#go.draft-ietf-acme-profiles.diff)
+* [Compare Editor's Copy to Individual Draft](https://ietf-wg-acme.github.io/draft-acme-profiles/#go.draft-ietf-acme-profiles.diff)
 
 
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/aarongable/draft-acme-profiles/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/ietf-wg-acme/draft-acme-profiles/blob/main/CONTRIBUTING.md).
 
 Contributions can be made by creating pull requests.
 The GitHub interface supports creating pull requests using the Edit (✏) button.
