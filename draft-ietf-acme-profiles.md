@@ -55,7 +55,7 @@ This document provides a mechanism for ACME Servers to advertise what certificat
 
 # Extensions to the Directory Resource
 
-An ACME Server which wishes to allow Clients to select profiles MUST include a new field, `profiles`, in the `meta` field of its Directory object.
+An ACME Server indicates that it implements this specification by including a `profiles` field within the `meta` field of its Directory object.
 
 `profiles` (optional, object):  A map of profile names to URLs.
 
@@ -91,7 +91,7 @@ In order to convey information about the profile associated with an Order, a new
 
 `profile` (string, optional): A string uniquely identifying the profile which will be used to affect issuance of the certificate requested by this Order.
 
-To select a profile, the client includes the desired profile name in the `profile` field of the Order object they supply to the newOrder request. The client SHOULD NOT request a profile name that is not advertised in the server's Directory metadata object.
+To select a profile, the client includes the desired profile name in the `profile` field of the Order object they supply to the newOrder request.
 
 ~~~ text
 POST /acme/new-order HTTP/1.1
@@ -113,9 +113,11 @@ Content-Type: application/jose+json
 }
 ~~~
 
-The server MUST reject all newOrder requests which specify a profile that is incompatible with the rest of the contents of the request (e.g. a "tls-server-auth" profile alongside an identifier of type "email", or a "super-special" profile requested by an account which is not on the appropriate allowlist). In such cases, the server MUST respond with a problem document of type "invalidProfile" (see Section 6.3).
+The client SHOULD NOT request a profile name that is not advertised in the server's Directory metadata object. The server SHOULD reject all newOrder requests which specify a profile that the server is not advertising, but MAY accept them in extenuating circumstances. For example, when a private profile name has been agreed upon with the client via out-of-band mechanisms, or when replacing a certificate during a mass revocation event that was originally issued under a now-deprecated profile.
 
-The server SHOULD reject all newOrder requests which specify a profile that the server is not advertising, but MAY accept them in extenuating circumstances. For example, when a private profile name has been agreed upon with the client via out-of-band mechanisms, or when replacing a certificate during a mass revocation event that was originally issued under a now-deprecated profile.
+The server MUST reject all newOrder requests which specify a profile that is incompatible with the rest of the contents of the request (e.g. a "tls-server-auth" profile alongside an identifier of type "email", or a "super-special" profile requested by an account which is not on the appropriate allowlist).
+
+If the server rejects the newOrder request due to the requested profile, the server MUST respond with a problem document of type "invalidProfile" (see Section 6.3).
 
 If it accepts the request, the server responds with an Order object including the selected profile.
 
