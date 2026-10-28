@@ -45,7 +45,7 @@ This document is implemented by at least two ACME Servers ([Boulder](https://git
 
 Throughout the history of the WebPKI, Certificate Authorities have used "profiles" to describe the kinds of certificates they issue. For example, an "S/MIME" profile might indicate that the resulting certificate will contain the `id-kp-emailProtection` Extended Key Usage and use a Certificate Policy OID to assert compliance with the CA/Browser Forum S/MIME Baseline Requirements; or a "Constrained Sub-CA" profile might indicate the inclusion of the Basic Constraints extension, the keyCertSign Key Usage, and a Name Constraints extension. Subscribers generally select a profile as part of their certificate ordering process or negotiations with the CA, depending on their needs (and sometimes their budget).
 
-The ACME protocol only allows clients to customize their certificate in two ways: the newOrder request allows selection of the identifiers (generally Subject Alternative Names) and validity period; and the finalize request contains a CSR in which the client can theoretically include any combination of fields and extensions that they desire. But requesting certificate features via the CSR is onerous, error-prone, and dangerous. Numerous compliance incidents across the WebPKI have been caused by CAs trusting values included in a CSR and copying them directly into the issued certificate. It requires clients to know how to construct a valid CSR, provides no mechanism for servers to advertise what CSR fields they're willing to accept, and means that CAs have to evaluate on a case-by-case basis which combinations of requested features they're willing to issue.
+The ACME protocol {{RFC8555}} only allows clients to customize their certificate in two ways: the newOrder request allows selection of the identifiers (generally Subject Alternative Names) and validity period; and the finalize request contains a CSR in which the client can theoretically include any combination of fields and extensions that they desire. But requesting certificate features via the CSR is onerous, error-prone, and dangerous. Numerous compliance incidents across the WebPKI have been caused by CAs trusting values included in a CSR and copying them directly into the issued certificate. It requires clients to know how to construct a valid CSR, provides no mechanism for servers to advertise what CSR fields they're willing to accept, and means that CAs have to evaluate on a case-by-case basis which combinations of requested features they're willing to issue.
 
 This document provides a mechanism for ACME Servers to advertise what certificate profiles they offer, and for ACME Clients to select a profile when creating a new Order. This allows site operators to make informed decisions about the kind of certificate they request, without placing an undue burden on ACME Clients or Servers to transmit such information in the form of a CSR. It also encourages the evolution of the WebPKI by allowing CAs to more easily offer new and improved profiles while maintaining backwards compatibility for old subscribers.
 
@@ -62,27 +62,27 @@ An ACME Server which wishes to allow Clients to select profiles MUST include a n
 Each profile name is a short unique identifier of the profile, and each URL points to a human-readable description of that profile. CAs MAY use data URIs {{RFC2397}} to provide an in-line text description if they do not wish to host external documentation pages. ACME Clients SHOULD present these profile names and URLs to their operator during initial setup and at appropriate times thereafter.
 
 ~~~ text
-    HTTP/1.1 200 OK
-    Content-Type: application/json
+HTTP/1.1 200 OK
+Content-Type: application/json
 
-    {
-      "newNonce": "https://acme.example.com/new-nonce",
-      "newAccount": "https://acme.example.com/new-account",
-      "newOrder": "https://acme.example.com/new-order",
-      "newAuthz": "https://acme.example.com/new-authz",
-      "revokeCert": "https://acme.example.com/revoke-cert",
-      "keyChange": "https://acme.example.com/key-change",
-      "meta": {
-        "termsOfService": "https://example.com/acme/terms",
-        "website": "https://example.com/acme/docs",
-        "caaIdentities": ["example.com"],
-        "externalAccountRequired": false,
-        "profiles": {
-          "profile1": "https://example.com/acme/docs/profiles#profile1",
-          "profile2": "data:text/plain;charset=utf-8,profile%202",
-        }
-      }
+{
+  "newNonce": "https://acme.example.com/new-nonce",
+  "newAccount": "https://acme.example.com/new-account",
+  "newOrder": "https://acme.example.com/new-order",
+  "newAuthz": "https://acme.example.com/new-authz",
+  "revokeCert": "https://acme.example.com/revoke-cert",
+  "keyChange": "https://acme.example.com/key-change",
+  "meta": {
+    "termsOfService": "https://example.com/acme/terms",
+    "website": "https://example.com/acme/docs",
+    "caaIdentities": ["example.com"],
+    "externalAccountRequired": false,
+    "profiles": {
+      "profile1": "https://example.com/docs/profiles#profile1",
+      "profile2": "data:text/plain;charset=utf-8,profile%202",
     }
+  }
+}
 ~~~
 
 # Extensions to the Order Resource
@@ -94,23 +94,23 @@ In order to convey information about the profile associated with an Order, a new
 To select a profile, the client includes the desired profile name in the `profile` field of the Order object they supply to the newOrder request. The client SHOULD NOT request a profile name that is not advertised in the server's Directory metadata object.
 
 ~~~ text
-    POST /acme/new-order HTTP/1.1
-    Host: acme.example.com
-    Content-Type: application/jose+json
+POST /acme/new-order HTTP/1.1
+Host: acme.example.com
+Content-Type: application/jose+json
 
-    {
-      "protected": base64url({
-        "alg": "ES256",
-        "kid": "https://acme.example.com/acct/evOfKhNU60wg",
-        "nonce": "5XJ1L3lEkMG7tR6pA00clA",
-        "url": "https://acme.example.com/new-order"
-      }),
-      "payload": base64url({
-        "identifiers": [{"type": "dns", "value": "example.org"}],
-        "profile": "profile1"
-      }),
-      "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
-    }
+{
+  "protected": base64url({
+    "alg": "ES256",
+    "kid": "https://acme.example.com/acct/evOfKhNU60wg",
+    "nonce": "5XJ1L3lEkMG7tR6pA00clA",
+    "url": "https://acme.example.com/new-order"
+  }),
+  "payload": base64url({
+    "identifiers": [{"type": "dns", "value": "example.org"}],
+    "profile": "profile1"
+  }),
+  "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
+}
 ~~~
 
 The server MUST reject all newOrder requests which specify a profile that is incompatible with the rest of the contents of the request (e.g. a "tls-server-auth" profile alongside an identifier of type "email", or a "super-special" profile requested by an account which is not on the appropriate allowlist). In such cases, the server MUST respond with a problem document of type "invalidProfile" (see Section 6.3).
@@ -120,19 +120,19 @@ The server SHOULD reject all newOrder requests which specify a profile that the 
 If it accepts the request, the server responds with an Order object including the selected profile.
 
 ~~~ text
-    HTTP/1.1 201 Created
-    Replay-Nonce: MYAuvOpaoIiywTezizk5vw
-    Link: <https://acme.example.com/directory>;rel="index"
-    Location: https://acme.example.com/order/TOlocE8rfgo
+HTTP/1.1 201 Created
+Replay-Nonce: MYAuvOpaoIiywTezizk5vw
+Link: <https://acme.example.com/directory>;rel="index"
+Location: https://acme.example.com/order/TOlocE8rfgo
 
-    {
-      "status": "valid",
-      "expires": "2025-01-01T12:00:00Z",
-      "identifiers": [{"type": "dns", "value": "example.org"}],
-      "profile": "profile1",
-      "authorizations": ["https://acme.example.com/authz/PAniVnsZcis"],
-      "finalize": "https://acme.example.com/order/TOlocE8rfgo/finalize",
-    }
+{
+  "status": "valid",
+  "expires": "2025-01-01T12:00:00Z",
+  "identifiers": [{"type": "dns", "value": "example.org"}],
+  "profile": "profile1",
+  "authorizations": ["https://acme.example.com/authz/PAniVnsZcis"],
+  "finalize": "https://acme.example.com/order/TOlocE8rfgo/finalize",
+}
 ~~~
 
 If the server is advertizing profiles and receives a newOrder request which does not identify a specific profile, it is RECOMMENDED that the server select a profile and associate it with the new Order object.
