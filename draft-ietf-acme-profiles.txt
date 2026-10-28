@@ -116,19 +116,19 @@ Table of Contents
    certificate ordering process or negotiations with the CA, depending
    on their needs (and sometimes their budget).
 
-   The ACME protocol only allows clients to customize their certificate
-   in two ways: the newOrder request allows selection of the identifiers
-   (generally Subject Alternative Names) and validity period; and the
-   finalize request contains a CSR in which the client can theoretically
-   include any combination of fields and extensions that they desire.
-   But requesting certificate features via the CSR is onerous, error-
-   prone, and dangerous.  Numerous compliance incidents across the
-   WebPKI have been caused by CAs trusting values included in a CSR and
-   copying them directly into the issued certificate.  It requires
-   clients to know how to construct a valid CSR, provides no mechanism
-   for servers to advertise what CSR fields they're willing to accept,
-   and means that CAs have to evaluate on a case-by-case basis which
-   combinations of requested features they're willing to issue.
+   The ACME protocol [RFC8555] only allows clients to customize their
+   certificate in two ways: the newOrder request allows selection of the
+   identifiers (generally Subject Alternative Names) and validity
+   period; and the finalize request contains a CSR in which the client
+   can theoretically include any combination of fields and extensions
+   that they desire.  But requesting certificate features via the CSR is
+   onerous, error-prone, and dangerous.  Numerous compliance incidents
+   across the WebPKI have been caused by CAs trusting values included in
+   a CSR and copying them directly into the issued certificate.  It
+   requires clients to know how to construct a valid CSR, provides no
+   mechanism for servers to advertise what CSR fields they're willing to
+   accept, and means that CAs have to evaluate on a case-by-case basis
+   which combinations of requested features they're willing to issue.
 
    This document provides a mechanism for ACME Servers to advertise what
    certificate profiles they offer, and for ACME Clients to select a
@@ -163,27 +163,27 @@ Table of Contents
    SHOULD present these profile names and URLs to their operator during
    initial setup and at appropriate times thereafter.
 
-       HTTP/1.1 200 OK
-       Content-Type: application/json
+   HTTP/1.1 200 OK
+   Content-Type: application/json
 
-       {
-         "newNonce": "https://acme.example.com/new-nonce",
-         "newAccount": "https://acme.example.com/new-account",
-         "newOrder": "https://acme.example.com/new-order",
-         "newAuthz": "https://acme.example.com/new-authz",
-         "revokeCert": "https://acme.example.com/revoke-cert",
-         "keyChange": "https://acme.example.com/key-change",
-         "meta": {
-           "termsOfService": "https://example.com/acme/terms",
-           "website": "https://example.com/acme/docs",
-           "caaIdentities": ["example.com"],
-           "externalAccountRequired": false,
-           "profiles": {
-             "profile1": "https://example.com/acme/docs/profiles#profile1",
-             "profile2": "data:text/plain;charset=utf-8,profile%202",
-           }
-         }
+   {
+     "newNonce": "https://acme.example.com/new-nonce",
+     "newAccount": "https://acme.example.com/new-account",
+     "newOrder": "https://acme.example.com/new-order",
+     "newAuthz": "https://acme.example.com/new-authz",
+     "revokeCert": "https://acme.example.com/revoke-cert",
+     "keyChange": "https://acme.example.com/key-change",
+     "meta": {
+       "termsOfService": "https://example.com/acme/terms",
+       "website": "https://example.com/acme/docs",
+       "caaIdentities": ["example.com"],
+       "externalAccountRequired": false,
+       "profiles": {
+         "profile1": "https://example.com/docs/profiles#profile1",
+         "profile2": "data:text/plain;charset=utf-8,profile%202",
        }
+     }
+   }
 
 4.  Extensions to the Order Resource
 
@@ -199,23 +199,23 @@ Table of Contents
    request.  The client SHOULD NOT request a profile name that is not
    advertised in the server's Directory metadata object.
 
-       POST /acme/new-order HTTP/1.1
-       Host: acme.example.com
-       Content-Type: application/jose+json
+   POST /acme/new-order HTTP/1.1
+   Host: acme.example.com
+   Content-Type: application/jose+json
 
-       {
-         "protected": base64url({
-           "alg": "ES256",
-           "kid": "https://acme.example.com/acct/evOfKhNU60wg",
-           "nonce": "5XJ1L3lEkMG7tR6pA00clA",
-           "url": "https://acme.example.com/new-order"
-         }),
-         "payload": base64url({
-           "identifiers": [{"type": "dns", "value": "example.org"}],
-           "profile": "profile1"
-         }),
-         "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
-       }
+   {
+     "protected": base64url({
+       "alg": "ES256",
+       "kid": "https://acme.example.com/acct/evOfKhNU60wg",
+       "nonce": "5XJ1L3lEkMG7tR6pA00clA",
+       "url": "https://acme.example.com/new-order"
+     }),
+     "payload": base64url({
+       "identifiers": [{"type": "dns", "value": "example.org"}],
+       "profile": "profile1"
+     }),
+     "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
+   }
 
    The server MUST reject all newOrder requests which specify a profile
    that is incompatible with the rest of the contents of the request
@@ -235,19 +235,19 @@ Table of Contents
    If it accepts the request, the server responds with an Order object
    including the selected profile.
 
-       HTTP/1.1 201 Created
-       Replay-Nonce: MYAuvOpaoIiywTezizk5vw
-       Link: <https://acme.example.com/directory>;rel="index"
-       Location: https://acme.example.com/order/TOlocE8rfgo
+   HTTP/1.1 201 Created
+   Replay-Nonce: MYAuvOpaoIiywTezizk5vw
+   Link: <https://acme.example.com/directory>;rel="index"
+   Location: https://acme.example.com/order/TOlocE8rfgo
 
-       {
-         "status": "valid",
-         "expires": "2025-01-01T12:00:00Z",
-         "identifiers": [{"type": "dns", "value": "example.org"}],
-         "profile": "profile1",
-         "authorizations": ["https://acme.example.com/authz/PAniVnsZcis"],
-         "finalize": "https://acme.example.com/order/TOlocE8rfgo/finalize",
-       }
+   {
+     "status": "valid",
+     "expires": "2025-01-01T12:00:00Z",
+     "identifiers": [{"type": "dns", "value": "example.org"}],
+     "profile": "profile1",
+     "authorizations": ["https://acme.example.com/authz/PAniVnsZcis"],
+     "finalize": "https://acme.example.com/order/TOlocE8rfgo/finalize",
+   }
 
    If the server is advertizing profiles and receives a newOrder request
    which does not identify a specific profile, it is RECOMMENDED that
