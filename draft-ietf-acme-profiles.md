@@ -25,6 +25,7 @@ author:
 
 normative:
   RFC8555:
+  RFC2397:
 
 informative:
 
@@ -58,7 +59,7 @@ An ACME Server which wishes to allow Clients to select profiles MUST include a n
 
 `profiles` (optional, object):  A map of profile names to URLs.
 
-Each profile name is a short unique identifier of the profile, and each URL points to a human-readable description of that profile. CAs MAY use data URIs to provide an in-line text description if they do not wish to host external documentation pages. ACME Clients SHOULD present these profile names and URLs to their operator during initial setup and at appropriate times thereafter.
+Each profile name is a short unique identifier of the profile, and each URL points to a human-readable description of that profile. CAs MAY use data URIs {{RFC2397}} to provide an in-line text description if they do not wish to host external documentation pages. ACME Clients SHOULD present these profile names and URLs to their operator during initial setup and at appropriate times thereafter.
 
 ~~~ text
     HTTP/1.1 200 OK
@@ -78,7 +79,7 @@ Each profile name is a short unique identifier of the profile, and each URL poin
         "externalAccountRequired": false,
         "profiles": {
           "profile1": "https://example.com/acme/docs/profiles#profile1",
-          "profile2": "https://example.com/acme/docs/profiles#profile2",
+          "profile2": "data:text/plain;charset=utf-8,profile%202",
         }
       }
     }
@@ -144,7 +145,7 @@ The extensions to the ACME protocol described in this document build upon the Se
 
 The one exception is in regards to CA Policy Considerations. RFC 8555 did not address how a server should determine whether it is willing to issue the certificate as requested by the finalize CSR. This document greatly simplifies this determination by making the contents of the CSR (beyond the Subject Alternative Names and Subject Public Key) irrelevant to the decision-making process.
 
-Additionally, by moving profile selection out of the finalize CSR and into the Order resource itself, this document reduces the need for ACME Clients and Servers to parse and process x509 ASN.1. This increases the security and stability of the WebPKI as a whole by reducing the incidence of parsing errors and the likelihood of values being copied directly from the CSR into the resulting certificate.
+Additionally, by moving profile selection out of the finalize CSR and into the Order resource itself, this document reduces the need for ACME Clients and Servers to parse and process the contents of CSRs. This increases the security and stability of the WebPKI as a whole by reducing the incidence of parsing errors and the likelihood of values being copied directly from the CSR into the resulting certificate.
 
 # IANA Considerations
 
