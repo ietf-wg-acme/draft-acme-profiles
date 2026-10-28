@@ -4,8 +4,8 @@
 
 Automated Certificate Management Environment                    A. Gable
 Internet-Draft                          Internet Security Research Group
-Intended status: Standards Track                          28 August 2026
-Expires: 1 March 2027
+Intended status: Standards Track                         28 October 2026
+Expires: 1 May 2027
 
 
  Automated Certificate Management Environment (ACME) Profiles Extension
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 March 2027.
+   This Internet-Draft will expire on 1 May 2027.
 
 Copyright Notice
 
@@ -158,10 +158,10 @@ Table of Contents
 
    Each profile name is a short unique identifier of the profile, and
    each URL points to a human-readable description of that profile.  CAs
-   MAY use data URIs to provide an in-line text description if they do
-   not wish to host external documentation pages.  ACME Clients SHOULD
-   present these profile names and URLs to their operator during initial
-   setup and at appropriate times thereafter.
+   MAY use data URIs [RFC2397] to provide an in-line text description if
+   they do not wish to host external documentation pages.  ACME Clients
+   SHOULD present these profile names and URLs to their operator during
+   initial setup and at appropriate times thereafter.
 
        HTTP/1.1 200 OK
        Content-Type: application/json
@@ -180,7 +180,7 @@ Table of Contents
            "externalAccountRequired": false,
            "profiles": {
              "profile1": "https://example.com/acme/docs/profiles#profile1",
-             "profile2": "https://example.com/acme/docs/profiles#profile2",
+             "profile2": "data:text/plain;charset=utf-8,profile%202",
            }
          }
        }
@@ -277,8 +277,8 @@ Table of Contents
 
    Additionally, by moving profile selection out of the finalize CSR and
    into the Order resource itself, this document reduces the need for
-   ACME Clients and Servers to parse and process x509 ASN.1.  This
-   increases the security and stability of the WebPKI as a whole by
+   ACME Clients and Servers to parse and process the contents of CSRs.
+   This increases the security and stability of the WebPKI as a whole by
    reducing the incidence of parsing errors and the likelihood of values
    being copied directly from the CSR into the resulting certificate.
 
@@ -337,6 +337,10 @@ Table of Contents
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC2397]  Masinter, L., "The "data" URL scheme", RFC 2397,
+              DOI 10.17487/RFC2397, August 1998,
+              <https://www.rfc-editor.org/rfc/rfc2397>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
