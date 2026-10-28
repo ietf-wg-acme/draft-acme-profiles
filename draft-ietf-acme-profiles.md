@@ -74,7 +74,7 @@ Content-Type: application/json
   "keyChange": "https://acme.example.com/key-change",
   "meta": {
     "termsOfService": "https://example.com/acme/terms",
-    "website": "https://example.com/acme/docs",
+    "website": "https://example.com/docs",
     "caaIdentities": ["example.com"],
     "externalAccountRequired": false,
     "profiles": {
