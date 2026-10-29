@@ -4,8 +4,8 @@
 
 Automated Certificate Management Environment                    A. Gable
 Internet-Draft                          Internet Security Research Group
-Intended status: Standards Track                         28 October 2026
-Expires: 1 May 2027
+Intended status: Standards Track                         29 October 2026
+Expires: 2 May 2027
 
 
  Automated Certificate Management Environment (ACME) Profiles Extension
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 May 2027.
+   This Internet-Draft will expire on 2 May 2027.
 
 Copyright Notice
 
@@ -150,8 +150,8 @@ Table of Contents
 
 3.  Extensions to the Directory Resource
 
-   An ACME Server which wishes to allow Clients to select profiles MUST
-   include a new field, profiles, in the meta field of its Directory
+   An ACME Server indicates that it implements this specification by
+   including a profiles field within the meta field of its Directory
    object.
 
    profiles (optional, object): A map of profile names to URLs.
@@ -175,7 +175,7 @@ Table of Contents
      "keyChange": "https://acme.example.com/key-change",
      "meta": {
        "termsOfService": "https://example.com/acme/terms",
-       "website": "https://example.com/acme/docs",
+       "website": "https://example.com/docs",
        "caaIdentities": ["example.com"],
        "externalAccountRequired": false,
        "profiles": {
@@ -196,8 +196,7 @@ Table of Contents
 
    To select a profile, the client includes the desired profile name in
    the profile field of the Order object they supply to the newOrder
-   request.  The client SHOULD NOT request a profile name that is not
-   advertised in the server's Directory metadata object.
+   request.
 
    POST /acme/new-order HTTP/1.1
    Host: acme.example.com
@@ -217,20 +216,24 @@ Table of Contents
      "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
    }
 
+   The client SHOULD NOT request a profile name that is not advertised
+   in the server's Directory metadata object.  The server SHOULD reject
+   all newOrder requests which specify a profile that the server is not
+   advertising, but MAY accept them in extenuating circumstances.  For
+   example, when a private profile name has been agreed upon with the
+   client via out-of-band mechanisms, or when replacing a certificate
+   during a mass revocation event that was originally issued under a
+   now-deprecated profile.
+
    The server MUST reject all newOrder requests which specify a profile
    that is incompatible with the rest of the contents of the request
    (e.g. a "tls-server-auth" profile alongside an identifier of type
    "email", or a "super-special" profile requested by an account which
-   is not on the appropriate allowlist).  In such cases, the server MUST
-   respond with a problem document of type "invalidProfile" (see
-   Section 6.3).
+   is not on the appropriate allowlist).
 
-   The server SHOULD reject all newOrder requests which specify a
-   profile that the server is not advertising, but MAY accept them in
-   extenuating circumstances.  For example, when a private profile name
-   has been agreed upon with the client via out-of-band mechanisms, or
-   when replacing a certificate during a mass revocation event that was
-   originally issued under a now-deprecated profile.
+   If the server rejects the newOrder request due to the requested
+   profile, the server MUST respond with a problem document of type
+   "invalidProfile" (see Section 6.3).
 
    If it accepts the request, the server responds with an Order object
    including the selected profile.
