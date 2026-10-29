@@ -4,8 +4,8 @@
 
 Automated Certificate Management Environment                    A. Gable
 Internet-Draft                          Internet Security Research Group
-Intended status: Standards Track                         28 October 2026
-Expires: 1 May 2027
+Intended status: Standards Track                         29 October 2026
+Expires: 2 May 2027
 
 
  Automated Certificate Management Environment (ACME) Profiles Extension
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 May 2027.
+   This Internet-Draft will expire on 2 May 2027.
 
 Copyright Notice
 
@@ -116,19 +116,19 @@ Table of Contents
    certificate ordering process or negotiations with the CA, depending
    on their needs (and sometimes their budget).
 
-   The ACME protocol only allows clients to customize their certificate
-   in two ways: the newOrder request allows selection of the identifiers
-   (generally Subject Alternative Names) and validity period; and the
-   finalize request contains a CSR in which the client can theoretically
-   include any combination of fields and extensions that they desire.
-   But requesting certificate features via the CSR is onerous, error-
-   prone, and dangerous.  Numerous compliance incidents across the
-   WebPKI have been caused by CAs trusting values included in a CSR and
-   copying them directly into the issued certificate.  It requires
-   clients to know how to construct a valid CSR, provides no mechanism
-   for servers to advertise what CSR fields they're willing to accept,
-   and means that CAs have to evaluate on a case-by-case basis which
-   combinations of requested features they're willing to issue.
+   The ACME protocol [RFC8555] only allows clients to customize their
+   certificate in two ways: the newOrder request allows selection of the
+   identifiers (generally Subject Alternative Names) and validity
+   period; and the finalize request contains a CSR in which the client
+   can theoretically include any combination of fields and extensions
+   that they desire.  But requesting certificate features via the CSR is
+   onerous, error-prone, and dangerous.  Numerous compliance incidents
+   across the WebPKI have been caused by CAs trusting values included in
+   a CSR and copying them directly into the issued certificate.  It
+   requires clients to know how to construct a valid CSR, provides no
+   mechanism for servers to advertise what CSR fields they're willing to
+   accept, and means that CAs have to evaluate on a case-by-case basis
+   which combinations of requested features they're willing to issue.
 
    This document provides a mechanism for ACME Servers to advertise what
    certificate profiles they offer, and for ACME Clients to select a
