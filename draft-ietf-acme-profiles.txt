@@ -4,8 +4,8 @@
 
 Automated Certificate Management Environment                    A. Gable
 Internet-Draft                          Internet Security Research Group
-Intended status: Standards Track                         29 October 2026
-Expires: 2 May 2027
+Intended status: Standards Track                        12 November 2026
+Expires: 16 May 2027
 
 
  Automated Certificate Management Environment (ACME) Profiles Extension
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 May 2027.
+   This Internet-Draft will expire on 16 May 2027.
 
 Copyright Notice
 
@@ -104,13 +104,13 @@ Table of Contents
 
 1.  Introduction
 
-   Throughout the history of the WebPKI, Certificate Authorities have
-   used "profiles" to describe the kinds of certificates they issue.
-   For example, an "S/MIME" profile might indicate that the resulting
-   certificate will contain the id-kp-emailProtection Extended Key Usage
-   and use a Certificate Policy OID to assert compliance with the CA/
-   Browser Forum S/MIME Baseline Requirements; or a "Constrained Sub-CA"
-   profile might indicate the inclusion of the Basic Constraints
+   Throughout the history of the WebPKI, Certificate Authorities (CAs)
+   have used "profiles" to describe the kinds of certificates they
+   issue.  For example, an "S/MIME" profile might indicate that the
+   resulting certificate will contain the id-kp-emailProtection Extended
+   Key Usage and use a Certificate Policy OID to assert compliance with
+   the CA/Browser Forum S/MIME Baseline Requirements; or a "Constrained
+   Sub-CA" profile might indicate the inclusion of the Basic Constraints
    extension, the keyCertSign Key Usage, and a Name Constraints
    extension.  Subscribers generally select a profile as part of their
    certificate ordering process or negotiations with the CA, depending
@@ -119,16 +119,17 @@ Table of Contents
    The ACME protocol [RFC8555] only allows clients to customize their
    certificate in two ways: the newOrder request allows selection of the
    identifiers (generally Subject Alternative Names) and validity
-   period; and the finalize request contains a CSR in which the client
-   can theoretically include any combination of fields and extensions
-   that they desire.  But requesting certificate features via the CSR is
-   onerous, error-prone, and dangerous.  Numerous compliance incidents
-   across the WebPKI have been caused by CAs trusting values included in
-   a CSR and copying them directly into the issued certificate.  It
-   requires clients to know how to construct a valid CSR, provides no
-   mechanism for servers to advertise what CSR fields they're willing to
-   accept, and means that CAs have to evaluate on a case-by-case basis
-   which combinations of requested features they're willing to issue.
+   period; and the finalize request contains a Certificate Signing
+   Request (CSR) in which the client can theoretically include any
+   combination of fields and extensions that they desire.  But
+   requesting certificate features via the CSR is onerous, error-prone,
+   and dangerous.  Numerous compliance incidents across the WebPKI have
+   been caused by CAs trusting values included in a CSR and copying them
+   directly into the issued certificate.  It requires clients to know
+   how to construct a valid CSR, provides no mechanism for servers to
+   advertise what CSR fields they're willing to accept, and means that
+   CAs have to evaluate on a case-by-case basis which combinations of
+   requested features they're willing to issue.
 
    This document provides a mechanism for ACME Servers to advertise what
    certificate profiles they offer, and for ACME Clients to select a
