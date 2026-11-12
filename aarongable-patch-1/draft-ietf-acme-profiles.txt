@@ -4,8 +4,8 @@
 
 Automated Certificate Management Environment                    A. Gable
 Internet-Draft                          Internet Security Research Group
-Intended status: Standards Track                         28 October 2026
-Expires: 1 May 2027
+Intended status: Standards Track                        12 November 2026
+Expires: 16 May 2027
 
 
  Automated Certificate Management Environment (ACME) Profiles Extension
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 May 2027.
+   This Internet-Draft will expire on 16 May 2027.
 
 Copyright Notice
 
@@ -104,13 +104,13 @@ Table of Contents
 
 1.  Introduction
 
-   Throughout the history of the WebPKI, Certificate Authorities have
-   used "profiles" to describe the kinds of certificates they issue.
-   For example, an "S/MIME" profile might indicate that the resulting
-   certificate will contain the id-kp-emailProtection Extended Key Usage
-   and use a Certificate Policy OID to assert compliance with the CA/
-   Browser Forum S/MIME Baseline Requirements; or a "Constrained Sub-CA"
-   profile might indicate the inclusion of the Basic Constraints
+   Throughout the history of the WebPKI, Certificate Authorities (CAs)
+   have used "profiles" to describe the kinds of certificates they
+   issue.  For example, an "S/MIME" profile might indicate that the
+   resulting certificate will contain the id-kp-emailProtection Extended
+   Key Usage and use a Certificate Policy OID to assert compliance with
+   the CA/Browser Forum S/MIME Baseline Requirements; or a "Constrained
+   Sub-CA" profile might indicate the inclusion of the Basic Constraints
    extension, the keyCertSign Key Usage, and a Name Constraints
    extension.  Subscribers generally select a profile as part of their
    certificate ordering process or negotiations with the CA, depending
@@ -119,16 +119,17 @@ Table of Contents
    The ACME protocol [RFC8555] only allows clients to customize their
    certificate in two ways: the newOrder request allows selection of the
    identifiers (generally Subject Alternative Names) and validity
-   period; and the finalize request contains a CSR in which the client
-   can theoretically include any combination of fields and extensions
-   that they desire.  But requesting certificate features via the CSR is
-   onerous, error-prone, and dangerous.  Numerous compliance incidents
-   across the WebPKI have been caused by CAs trusting values included in
-   a CSR and copying them directly into the issued certificate.  It
-   requires clients to know how to construct a valid CSR, provides no
-   mechanism for servers to advertise what CSR fields they're willing to
-   accept, and means that CAs have to evaluate on a case-by-case basis
-   which combinations of requested features they're willing to issue.
+   period; and the finalize request contains a Certificate Signing
+   Request (CSR) in which the client can theoretically include any
+   combination of fields and extensions that they desire.  But
+   requesting certificate features via the CSR is onerous, error-prone,
+   and dangerous.  Numerous compliance incidents across the WebPKI have
+   been caused by CAs trusting values included in a CSR and copying them
+   directly into the issued certificate.  It requires clients to know
+   how to construct a valid CSR, provides no mechanism for servers to
+   advertise what CSR fields they're willing to accept, and means that
+   CAs have to evaluate on a case-by-case basis which combinations of
+   requested features they're willing to issue.
 
    This document provides a mechanism for ACME Servers to advertise what
    certificate profiles they offer, and for ACME Clients to select a
@@ -150,8 +151,8 @@ Table of Contents
 
 3.  Extensions to the Directory Resource
 
-   An ACME Server which wishes to allow Clients to select profiles MUST
-   include a new field, profiles, in the meta field of its Directory
+   An ACME Server indicates that it implements this specification by
+   including a profiles field within the meta field of its Directory
    object.
 
    profiles (optional, object): A map of profile names to URLs.
@@ -175,7 +176,7 @@ Table of Contents
      "keyChange": "https://acme.example.com/key-change",
      "meta": {
        "termsOfService": "https://example.com/acme/terms",
-       "website": "https://example.com/acme/docs",
+       "website": "https://example.com/docs",
        "caaIdentities": ["example.com"],
        "externalAccountRequired": false,
        "profiles": {
@@ -196,8 +197,7 @@ Table of Contents
 
    To select a profile, the client includes the desired profile name in
    the profile field of the Order object they supply to the newOrder
-   request.  The client SHOULD NOT request a profile name that is not
-   advertised in the server's Directory metadata object.
+   request.
 
    POST /acme/new-order HTTP/1.1
    Host: acme.example.com
@@ -217,20 +217,24 @@ Table of Contents
      "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
    }
 
+   The client SHOULD NOT request a profile name that is not advertised
+   in the server's Directory metadata object.  The server SHOULD reject
+   all newOrder requests which specify a profile that the server is not
+   advertising, but MAY accept them in extenuating circumstances.  For
+   example, when a private profile name has been agreed upon with the
+   client via out-of-band mechanisms, or when replacing a certificate
+   during a mass revocation event that was originally issued under a
+   now-deprecated profile.
+
    The server MUST reject all newOrder requests which specify a profile
    that is incompatible with the rest of the contents of the request
    (e.g. a "tls-server-auth" profile alongside an identifier of type
    "email", or a "super-special" profile requested by an account which
-   is not on the appropriate allowlist).  In such cases, the server MUST
-   respond with a problem document of type "invalidProfile" (see
-   Section 6.3).
+   is not on the appropriate allowlist).
 
-   The server SHOULD reject all newOrder requests which specify a
-   profile that the server is not advertising, but MAY accept them in
-   extenuating circumstances.  For example, when a private profile name
-   has been agreed upon with the client via out-of-band mechanisms, or
-   when replacing a certificate during a mass revocation event that was
-   originally issued under a now-deprecated profile.
+   If the server rejects the newOrder request due to the requested
+   profile, the server MUST respond with a problem document of type
+   "invalidProfile" (see Section 6.3).
 
    If it accepts the request, the server responds with an Order object
    including the selected profile.
